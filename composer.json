@@ -1,0 +1,27 @@
+{
+	"name" : "quazardous/silex-user-pack",
+	"keywords" : [
+        "user",
+        "security",
+        "silex"
+    ],
+	"type" : "library",
+	"description" : "A user pack for Silex",
+	"license" : "MIT",
+	"authors" : [{
+			"name" : "Quazardous",
+			"email" : "berliozdavid@gmail.com",
+			"role" : "Developer"
+		}
+	],
+	"require" : {
+		"silex/silex" : "^2.0@dev",
+		"quazardous/silex-pack" : "*@dev",
+		"quazardous/silex-console" : "*@dev"
+	},
+	"autoload" : {
+        "psr-4" : {
+            "Quazardous\\Silex\\" : "src/Silex"
+        }
+    }
+}
