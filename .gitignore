@@ -1,3 +1,7 @@
 /.project
 /.buildpath
 /.settings/
+/vendor/
+/composer.lock
+/cli-config.php
+/app/

@@ -3,8 +3,6 @@ Silex User Pack provides a basic user [security provider](http://silex.sensiolab
 
 It's inspired by [Silex SimpleUser](https://github.com/jasongrimes/silex-simpleuser) and based on Silex [security provider doc](https://github.com/silexphp/Silex/blob/master/doc/providers/security.rst).
 
-**UNDER CONSTRUCTION - COME AGAIN SOON**
-
 ## Installation
 
     composer require quazardous/silex-user-pack
@@ -36,7 +34,7 @@ $app->register(new SecurityServiceProvider(), [
                 // the route 'user.login' will be automatically created derivated from the '/login' path prefixed by 'user.'
                 // 'check_path' => '/admin/login_check'
                 // you can add all the custom scurity options you need
-                'default_target_path' => '/',
+                'default_target_path' => '/admin',
                 'failure_path' => '/',
             ], 
             'logout' => [
@@ -49,8 +47,9 @@ $app->register(new SecurityServiceProvider(), [
     ],
 ]);
 
-// register the user pack wich try to make the authentication easier...
-// the user pack will try to complete the 'security.firewalls' for you
+// register the user pack wich tries to make the authentication easier...
+// the user pack will try to complete the 'security.firewalls' for you.
+// it will also provide a basic Doctrine ORM user provider.
 $app->register(new SilexUserPack(), [
     'user.firewalls' => [
         // one or more firewalls to manage, see below

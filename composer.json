@@ -17,11 +17,20 @@
 	"require" : {
 		"silex/silex" : "^2.0@dev",
 		"quazardous/silex-pack" : "*@dev",
-		"quazardous/silex-console" : "*@dev"
+		"quazardous/silex-console" : "*@dev",
+		"symfony/security": "^3.0",
+        "twig/twig" : "^1.8",
+		"symfony/twig-bridge": "^3.0",
+        "symfony/form": "^3.0",
+        "dflydev/doctrine-orm-service-provider": "^2.0"
+	},
+	"require-dev" : {
+        "doctrine/data-fixtures" : "^1.0@dev",
+        "quazardous/silex-migration": "*@dev"
 	},
 	"autoload" : {
-        "psr-4" : {
-            "Quazardous\\Silex\\" : "src/Silex"
+        "psr-0" : {
+            "Quazardous\\Silex\\" : "src/"
         }
     }
 }
