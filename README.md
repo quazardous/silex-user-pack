@@ -49,7 +49,7 @@ $app->register(new SecurityServiceProvider(), [
 
 // register the user pack wich tries to make the authentication easier...
 // the user pack will try to complete the 'security.firewalls' for you.
-// it will also provide a basic Doctrine ORM user provider.
+// it will also provide a basic Doctrine ORM user provider and an overridable login form.
 $app->register(new SilexUserPack(), [
     'user.firewalls' => [
         // one or more firewalls to manage, see below
