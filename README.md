@@ -62,7 +62,7 @@ $app->register(new SecurityServiceProvider(), [
 
 ```
 
-The `user.login` is automatically created. Its name is derived from the full mounted `login_path` (all `/` are replaced with `_` and the leading `/` is stripped and then prefixed with the user pack's decamelize short namespace plus `.`).
+The route `user.login` is automatically created. Its name is derived from the full mounted `login_path` (all `/` are replaced with `_` and the leading `/` is stripped and then prefixed with the user pack's decamelize short namespace plus `.`).
 
 
 ### Register User Pack
@@ -92,7 +92,7 @@ $app->register(new SilexUserPack(), [
 NB: user pack should be mounted on `/` (option `user.mount_prefix`, see [Configurable Pack](https://github.com/quazardous/silex-pack#configurable-pack));
 
 ## Options
-NB: the 'user.' prefix is relative to the pack name.
+NB: the `'user.'` prefix is derived from to the pack name (decamelize short namespace).
 
 - `user.firewalls`
 
@@ -103,7 +103,7 @@ For `form` you have to put at least an empty `form` entry (See above). User pack
 
 - `user.unsecure_mount_prefix`
 
-User pack will use this option to mount the 'login_path'. Default to '/'.
+User pack will use this option to prefix the `login_path`. Default is `'/'`.
 
 ## Demo
 Go clone the [Silex pack demo](http://github.com/quazardous/silex-pack-demo).
