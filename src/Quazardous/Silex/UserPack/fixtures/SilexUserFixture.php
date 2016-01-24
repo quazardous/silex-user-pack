@@ -12,8 +12,8 @@ class SilexUserFixture extends AbstractFixture
     {
         $records = [
             // the password is the same as the username
-            ['admin', 'nhDr7OyKlXQju+Ge/WKGrPQ9lPBSUFfpK+B1xqx/+8zLZqRNX0+5G1zBQklXUFy86lCpkAofsExlXiorUcKSNQ==', ['ROLE_USER']],
-            ['johndoe', 'pDCg+bcH3F8acFT9Tu2mh2L2nFjMqJhjBzzAC5aBKY5XXqlOITp6fnE7b33s9Woxo7AHQ6h+t2W8GmUobP3g3g==', ['ROLE_ADMIN']],
+            ['admin', 'nhDr7OyKlXQju+Ge/WKGrPQ9lPBSUFfpK+B1xqx/+8zLZqRNX0+5G1zBQklXUFy86lCpkAofsExlXiorUcKSNQ==', ['ROLE_ADMIN']],
+            ['johndoe', 'pDCg+bcH3F8acFT9Tu2mh2L2nFjMqJhjBzzAC5aBKY5XXqlOITp6fnE7b33s9Woxo7AHQ6h+t2W8GmUobP3g3g==', ['ROLE_USER']],
         ];
         foreach ($records as $record) {
             $user = new User();
