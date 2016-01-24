@@ -2,6 +2,8 @@
 
 namespace Quazardous\Silex\UserPack\Entity;
 
+use Quazardous\Silex\UserPack\Entity\AbstractUserBase;
+
 /**
  * @Entity
  * @Table(
@@ -9,28 +11,8 @@ namespace Quazardous\Silex\UserPack\Entity;
  *    uniqueConstraints={@UniqueConstraint(name="user_username", columns={"username"})},
  *    )
  */
-class User
+class User extends AbstractUserBase
 {
-    /**
-     * @Id @Column(type="integer", nullable=false, options={"unsigned" = true}) @GeneratedValue
-     */
-    protected $id;
-
-    /**
-     * @Column(type="string", length=32, nullable=false)
-     */
-    protected $username;
-    
-    /**
-     * @Column(type="string", length=128, nullable=true)
-     */
-    protected $password;
-
-    /**
-     * @Column(type="json_array", nullable=true, options={})
-     */
-    protected $roles;
-    
     /**
      * Get id
      *
@@ -40,7 +22,7 @@ class User
     {
         return $this->id;
     }
-    
+
     /**
      * Set username
      *
@@ -51,10 +33,10 @@ class User
     public function setUsername($username)
     {
         $this->username = $username;
-    
+
         return $this;
     }
-    
+
     /**
      * Get username
      *
@@ -64,7 +46,7 @@ class User
     {
         return $this->username;
     }
-    
+
     /**
      * Set password
      *
@@ -75,10 +57,10 @@ class User
     public function setPassword($password)
     {
         $this->password = $password;
-    
+
         return $this;
     }
-    
+
     /**
      * Get password
      *
@@ -88,7 +70,6 @@ class User
     {
         return $this->password;
     }
-    
 
     /**
      * Set roles
