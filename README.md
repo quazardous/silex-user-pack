@@ -1,7 +1,9 @@
 # silex-user-pack
-Silex User Pack provides a basic user [security provider](http://silex.sensiolabs.org/doc/providers/security.html).
+Silex User Pack provides a basic user [security provider](http://silex.sensiolabs.org/doc/providers/security.html) with an overridable login form.
 
-It's inspired by [Silex SimpleUser](https://github.com/jasongrimes/silex-simpleuser) and based on Silex [security provider doc](https://github.com/silexphp/Silex/blob/master/doc/providers/security.rst).
+It was inspired by [Silex SimpleUser](https://github.com/jasongrimes/silex-simpleuser)
+
+It's based on Silex 2.x [security provider doc](https://github.com/silexphp/Silex/blob/master/doc/providers/security.rst).
 
 ## Installation
 
@@ -10,6 +12,10 @@ It's inspired by [Silex SimpleUser](https://github.com/jasongrimes/silex-simpleu
 ## Usage
 
 See [Silex pack](https://github.com/quazardous/silex-pack) for more informations on how to use packs.
+
+### Setup Doctrine ORM
+
+User pack has a default Doctrine ORM user provider.
 
 ```php
 // provide Doctrine
@@ -21,7 +27,15 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider, [
 $app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProviderDoctrineOrmServiceProvider, [
     ...
 ]);
+```
 
+### Setup Security
+
+User packs conforms with the security provider.
+
+It will just try to make the setup *easier* and guess inject trivial logic in the security layer.
+
+```php
 // provide security
 $app->register(new SecurityServiceProvider(), [
     'security.firewalls' => [
@@ -31,7 +45,6 @@ $app->register(new SecurityServiceProvider(), [
                 // user pack will populate the missing mandatory options but you have to set the 'form' key.
                 // 'login_path' => '/login',
                 // not specifying the login_path here means that user pack has to provide the path and the controller
-                // the route 'user.login' will be automatically created derivated from the '/login' path prefixed by 'user.'
                 // 'check_path' => '/admin/login_check'
                 // you can add all the custom scurity options you need
                 'default_target_path' => '/admin',
@@ -46,6 +59,15 @@ $app->register(new SecurityServiceProvider(), [
         ),
     ],
 ]);
+
+```
+
+The `user.login` is automatically created. Its name is derived from the full mounted `login_path` (all `/` are replaced with `_` and the leading `/` is stripped and then prefixed with the user pack's decamelize short namespace plus `.`).
+
+
+### Register User Pack
+
+```php
 
 // register the user pack wich tries to make the authentication easier...
 // the user pack will try to complete the 'security.firewalls' for you.
@@ -67,16 +89,20 @@ $app->register(new SilexUserPack(), [
 ...
 ```
 
+NB: user pack should be mounted on `/` (option `user.mount_prefix`, see [Configurable Pack](https://github.com/quazardous/silex-pack#configurable-pack));
+
 ## Options
 NB: the 'user.' prefix is relative to the pack name.
 
-### user.firewalls
+- `user.firewalls`
+
 A list of firewalls to manage with Silex User Pack. 
 Silex User Pack will try to guess the firewall authentication provider and inject required config.
-It knows how to manage 'form' and for the other just injects the 'users' user provider.
-For 'form' you have to put at least an empty 'form' entry (See above). User pack will try to set up 'logout' as well.
+It knows how to manage `form` and for the other just injects the `users` user provider.
+For `form` you have to put at least an empty `form` entry (See above). User pack will try to set up `logout` as well.
 
-### user.unsecure_mount_prefix
+- `user.unsecure_mount_prefix`
+
 User pack will use this option to mount the 'login_path'. Default to '/'.
 
 ## Demo
