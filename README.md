@@ -89,7 +89,7 @@ $app->register(new SilexUserPack(), [
 ...
 ```
 
-NB: user pack should be mounted on `/` (option `user.mount_prefix`, see [Configurable Pack](https://github.com/quazardous/silex-pack#configurable-pack));
+NB: user pack should be mounted on `/` (option `user.mount_prefix`, see [Optionnable Pack](https://github.com/quazardous/silex-pack#optionnable-pack));
 
 ## Options
 NB: the `user.` prefix is derived from to the pack name (decamelize short namespace).
