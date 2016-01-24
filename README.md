@@ -11,7 +11,7 @@ It's inspired by [Silex SimpleUser](https://github.com/jasongrimes/silex-simpleu
 
 See [Silex pack](https://github.com/quazardous/silex-pack) for more informations on how to use packs.
 
-```
+```php
 // provide Doctrine
 $app->register(new \Silex\Provider\DoctrineServiceProvider, [
     ...
