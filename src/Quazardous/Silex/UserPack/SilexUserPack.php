@@ -50,6 +50,9 @@ class SilexUserPack implements JetPackInterface
             // default 'check_path' and 'logout_path' this will be mounted on the 'secured_mount_prefix'
             $nsp . 'check_path' => '/login_check',
             $nsp . 'logout_path' => '/logout',
+            $nsp . 'username_parameter' => 'user_login[_username]',
+            $nsp . 'password_parameter' => 'user_login[_password]',
+            
         ];
         
         $app[$nsp . 'init_options'] = $app->protect(function () use ($app, $nsp) {
@@ -74,9 +77,15 @@ class SilexUserPack implements JetPackInterface
                 throw new \RuntimeException("Doctrine ORM not found");
             }
             $app[$nsp . 'init_options']();
+            if (isset($app['logger'])) {
+                $app['logger']->info("Loading $username...");
+            }
             /** @var \Quazardous\Silex\UserPack\Entity\User $dbUser */
             $dbUser = $app['orm.em']->getRepository($app[$nsp . 'user_entity_class'])->findOneBy(['username' => $username]);
             if (empty($dbUser)) {
+                if (isset($app['logger'])) {
+                    $app['logger']->notice("$username not found");
+                }
                 return null;
             }
             return new User($dbUser->getUsername(), $dbUser->getPassword(), (array)$dbUser->getRoles(), true, true, true, true);
@@ -110,7 +119,9 @@ class SilexUserPack implements JetPackInterface
                     'login_path' => $app[$nsp . 'login_path'],
                     'check_path' => $app[$nsp . 'check_path'],
                     'logout_path' => $app[$nsp . 'logout_path'],
-                    'invalidate_session' => $app[$nsp . 'logout_path'],
+                    'invalidate_session' => $app[$nsp . 'invalidate_session'],
+                    'username_parameter' => $app[$nsp . 'username_parameter'],
+                    'password_parameter' => $app[$nsp . 'password_parameter'],
                 ];
                 if (array_key_exists($name, $firewalls)) {
                     if (array_key_exists('form', $firewalls[$name])) {
@@ -133,6 +144,12 @@ class SilexUserPack implements JetPackInterface
                             $injected_paths[$name]['check_path'] = $firewalls[$name]['form']['check_path'];
                         }
                         $all_paths[$name]['check_path'] = $firewalls[$name]['form']['check_path'];
+                        if (empty($firewalls[$name]['form']['username_parameter'])) {
+                            $firewalls[$name]['form']['username_parameter'] = $options['username_parameter']; 
+                        }
+                        if (empty($firewalls[$name]['form']['password_parameter'])) {
+                            $firewalls[$name]['form']['password_parameter'] = $options['password_parameter']; 
+                        }
                     }
                     if (array_key_exists('logout', $firewalls[$name])) {
                         if (empty($firewalls[$name]['logout'])) {
@@ -172,16 +189,23 @@ class SilexUserPack implements JetPackInterface
         $controllers = $app['controllers_factory'];
         
         // add the login routes and controllers
+        $added_routes = [];
         foreach ($app[$nsp . 'injected_paths'] as $name => $paths) {
             if (isset($paths['login_path'])) {
                 if (empty($app[$nsp . 'all_paths'][$name]['check_path'])) {
                     throw new \LogicException("No check_path for login_path " . $paths['login_path']);
                 }
+                
                 $loginRoute = str_replace('/', '_', ltrim($paths['login_path'], '/'));
+                if (isset($added_routes[$loginRoute])) {
+                    // add a route only once
+                    continue;
+                }
                 $checkLoginRoute = str_replace('/', '_', ltrim($app[$nsp . 'all_paths'][$name]['check_path'], '/'));
                 $controllers->get($paths['login_path'], $this->_ns('controller.front:login'))
                     ->value('_check_route', $checkLoginRoute)
                     ->bind($this->_ns($loginRoute));
+                $added_routes[$loginRoute] = true;
             }
         }
         

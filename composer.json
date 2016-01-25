@@ -19,6 +19,7 @@
 		"quazardous/silex-pack" : "*@dev",
 		"quazardous/silex-console" : "*@dev",
 		"symfony/security": "^3.0",
+		"symfony/translation": "^3.0",
         "twig/twig" : "^1.8",
 		"symfony/twig-bridge": "^3.0",
         "symfony/form": "^3.0",

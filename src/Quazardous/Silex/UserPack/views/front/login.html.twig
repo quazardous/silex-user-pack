@@ -1,12 +1,7 @@
 {% extends uns ~ '/front/layout.html.twig' %}
 
-{% block login %}
+{% block user_login %}
 
-<form action="{{ path(_check_route) }}" method="post">
-    {{ error }}
-    <input type="text" name="_username" value="{{ last_username }}" />
-    <input type="password" name="_password" value="" />
-    <input type="submit" />
-</form>
+{{ form(user_login_form) }}
 
-{% endblock %}
+{% endblock user_login %}

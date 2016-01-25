@@ -5,3 +5,4 @@
 /composer.lock
 /cli-config.php
 /app/
+/.*.md.html

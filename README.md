@@ -13,6 +13,28 @@ It's based on Silex 2.x [security provider doc](https://github.com/silexphp/Sile
 
 See [Silex pack](https://github.com/quazardous/silex-pack) for more informations on how to use packs.
 
+### Instantiate a PackableApplication
+You have to extends a `Quazardous\Silex\PackableApplication` and use:
+- `Silex\Application\TwigTrait`
+- `Silex\Application\UrlGeneratorTrait`
+- `Silex\Application\FormTrait`
+- `Quazardous\Silex\Application\NamedFormTrait`
+
+
+```php
+namespace Acme {
+    class Application extends \Quazardous\Silex\PackableApplication {
+        use \Silex\Application\TwigTrait;
+        use \Silex\Application\UrlGeneratorTrait;
+        use \Silex\Application\FormTrait;
+        use \Quazardous\Silex\Application\NamedFormTrait;
+    };
+}
+
+$app = new \Acme\Application;
+
+```
+
 ### Setup Doctrine ORM
 
 User pack has a default Doctrine ORM user provider.
@@ -27,6 +49,22 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider, [
 $app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProviderDoctrineOrmServiceProvider, [
     ...
 ]);
+```
+
+### Setup Form
+
+Symfony form component require translation.
+
+```php
+...
+$app->register(new \Silex\Provider\LocaleServiceProvider);
+$app->register(new \Silex\Provider\TranslationServiceProvider(), [
+    'locale' => 'fr',
+    'locale_fallbacks' => ['en'],
+]);
+$app->register(new \Silex\Provider\CsrfServiceProvider());
+$app->register(new \Silex\Provider\FormServiceProvider());
+...
 ```
 
 ### Setup Security
