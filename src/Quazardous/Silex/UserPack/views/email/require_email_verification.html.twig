@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>{{ subject|e }}</title>
+</head>
+<body>
+
+<p>
+{{ (duns ~ 'require_email_verification.texts.welcome')|trans|e }}
+</p>
+
+<p>
+{{ (duns ~ 'require_email_verification.texts.confirm_email')|trans|e }}<br/>
+<a href="{{ url(register_confirm_route, {token: token})|e }}">{{ (duns ~ 'require_email_verification.labels.confirm_link')|trans|e }}</a>
+</p>
+
+<p>
+{{ (duns ~ 'require_email_verification.texts.copy_link')|trans|e }}<br/>
+<pre>{{ url(register_confirm_route, {token: token})|e }}</pre>
+</p>
+
+<p>
+<a href="{{ url(login_route)|e }}">{{ (duns ~ 'email.labels.login_link')|trans|e }}</a>
+</p>
+
+</body>
+</html>

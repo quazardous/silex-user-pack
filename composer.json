@@ -23,7 +23,11 @@
         "twig/twig" : "^1.8",
 		"symfony/twig-bridge": "^3.0",
         "symfony/form": "^3.0",
-        "dflydev/doctrine-orm-service-provider": "^2.0"
+        "symfony/validator" : "^3.0",
+        "dflydev/doctrine-orm-service-provider": "^2.0",
+        "symfony/doctrine-bridge": "^3.0",
+        "saxulum/saxulum-doctrine-orm-manager-registry-provider": "^3.0@dev",
+        "swiftmailer/swiftmailer" : "*"
 	},
 	"require-dev" : {
         "doctrine/data-fixtures" : "^1.0@dev",
@@ -31,7 +35,8 @@
 	},
 	"autoload" : {
         "psr-0" : {
-            "Quazardous\\Silex\\" : "src/"
+            "Quazardous\\Silex\\" : "src/",
+            "Quazardous\\Form\\" : "src/"
         }
     }
 }

@@ -1,5 +1,14 @@
 {% extends uns ~ '/base.html.twig' %}
 
 {% block body %}
+    {% block header %}
+    <h1>{{ title|e }}</h1>
+    {% endblock header %}
+    {% block message %}
+    {% if error is defined and error %} <div class="error">{{ error|e }}</div> {% endif %}
+    {% if message is defined and message %} <div class="message">{{ message|e }}</div> {% endif %}
+    {% endblock message %}
     {% block user_login %}{% endblock user_login %}
+    {% block user_register %}{% endblock user_register %}
+    {% block user_recover_password %}{% endblock user_recover_password %}
 {% endblock body %}

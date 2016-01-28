@@ -3,16 +3,34 @@
 namespace Quazardous\Silex\UserPack\Entity;
 
 use Quazardous\Silex\UserPack\Entity\AbstractUserBase;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @Entity
  * @Table(
- *    name="silex_user",
- *    uniqueConstraints={@UniqueConstraint(name="user_username", columns={"username"})},
- *    )
+ *     name="silex_user",
+ *     uniqueConstraints={
+ *         @UniqueConstraint(name="silex_user_username", columns={"username"}),
+ *         @UniqueConstraint(name="silex_user_email", columns={"email"})
+ *     }
+ * )
  */
 class User extends AbstractUserBase
 {
+    
+//     public static function loadValidatorMetadata(ClassMetadata $metadata)
+//     {
+//         $metadata->addConstraint(new UniqueEntity([
+//             'fields'  => 'email',
+//             'message' => ''
+//         ]));
+    
+//         $metadata->addPropertyConstraint('email', new Assert\Email());
+//     }
+    
     /**
      * Get id
      *
@@ -93,5 +111,77 @@ class User extends AbstractUserBase
     public function getRoles()
     {
         return $this->roles;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return User
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param boolean $enabled
+     *
+     * @return User
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * Set emailVerified
+     *
+     * @param boolean $emailVerified
+     *
+     * @return User
+     */
+    public function setEmailVerified($emailVerified)
+    {
+        $this->emailVerified = $emailVerified;
+
+        return $this;
+    }
+
+    /**
+     * Get emailVerified
+     *
+     * @return boolean
+     */
+    public function getEmailVerified()
+    {
+        return $this->emailVerified;
     }
 }

@@ -18,6 +18,11 @@ abstract class AbstractUserBase
     protected $username;
     
     /**
+     * @Column(type="string", length=255, nullable=false)
+     */
+    protected $email;
+    
+    /**
      * @Column(type="string", length=128, nullable=true)
      */
     protected $password;
@@ -26,5 +31,15 @@ abstract class AbstractUserBase
      * @Column(type="json_array", nullable=true, options={})
      */
     protected $roles;
+    
+    /**
+     * @Column(type="boolean", nullable=true, options={"default" = 0})
+     */
+    protected $enabled = false;
+    
+    /**
+     * @Column(type="boolean", nullable=true, options={"default" = 0})
+     */
+    protected $emailVerified = false;
     
 }

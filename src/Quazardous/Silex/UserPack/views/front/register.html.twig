@@ -1,0 +1,19 @@
+{% extends uns ~ '/front/layout.html.twig' %}
+
+{% block user_register %}
+
+{{ form(user_register_form) }}
+
+{% if _login_route %}
+<p>
+<a href="{{ path(_login_route) }}">{{ (duns ~ 'register.labels.login')|trans|e }}</a>
+</p>
+{% endif %}
+
+{% if _recover_password_route %}
+<p>
+<a href="{{ path(_recover_password_route) }}">{{ (duns ~ 'register.labels.recover_password')|trans|e }}</a>
+</p>
+{% endif %}
+
+{% endblock user_register %}

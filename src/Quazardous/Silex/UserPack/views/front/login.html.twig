@@ -4,4 +4,17 @@
 
 {{ form(user_login_form) }}
 
+{% if _register_route %}
+<p>
+<a href="{{ path(_register_route) }}">{{ (duns ~ 'login.labels.register')|trans|e }}</a>
+</p>
+{% endif %}
+
+{% if _recover_password_route %}
+<p>
+<a href="{{ path(_recover_password_route) }}">{{ (duns ~ 'login.labels.recover_password')|trans|e }}</a>
+</p>
+{% endif %}
+
+
 {% endblock user_login %}

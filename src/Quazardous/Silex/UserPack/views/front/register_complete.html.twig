@@ -1,0 +1,21 @@
+{% extends uns ~ '/front/layout.html.twig' %}
+
+{% block user_register %}
+
+<p>
+{% if _require_email_verification %}
+{{ (duns ~ 'register_complete.texts.require_email_verification')|trans|e }}
+{% elseif _email_verification %}
+{{ (duns ~ 'register_complete.texts.email_verification')|trans|e }}
+{% else %}
+{{ (duns ~ 'register_complete.texts.no_email_verification')|trans|e }}
+{% endif %}
+</p>
+
+{% if _login_route %}
+<p>
+<a href="{{ path(_login_route) }}">{{ (duns ~ 'register_complete.labels.login')|trans|e }}</a>
+</p>
+{% endif %}
+
+{% endblock user_register %}

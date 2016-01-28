@@ -1,0 +1,11 @@
+{{ subject }}
+
+{{ (duns ~ 'require_email_verification.texts.welcome')|trans }}
+
+{{ (duns ~ 'require_email_verification.texts.confirm_email')|trans }}
+
+{{ (duns ~ 'require_email_verification.texts.copy_link')|trans }}
+{{ url(register_confirm_route, {token: token}) }}
+
+{{ (duns ~ 'email.labels.login_link')|trans }}
+{{ url(login_route) }}
