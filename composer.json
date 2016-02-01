@@ -23,6 +23,7 @@
         "twig/twig" : "^1.8",
 		"symfony/twig-bridge": "^3.0",
         "symfony/form": "^3.0",
+        "doctrine/orm": "~2.3",
         "symfony/validator" : "^3.0",
         "dflydev/doctrine-orm-service-provider": "^2.0",
         "symfony/doctrine-bridge": "^3.0",

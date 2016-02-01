@@ -56,15 +56,6 @@ $app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProviderDoctr
     ...
 ]);
 
-// Add the ResolveTargetEntityListener
-$app->extend('db.event_manager', function ($evs) {
-    $rtel = new \Doctrine\ORM\Tools\ResolveTargetEntityListener;
-    // Adds a target-entity class
-    $rtel->addResolveTargetEntity('Quazardous\Silex\UserPack\Entity\UserInterface', 'Quazardous\Silex\UserPack\Entity\User', []);
-    $evs->addEventListener(Doctrine\ORM\Events::loadClassMetadata, $rtel);
-    return $evs;
-});
-
 ```
 
 ### Setup Form

@@ -37,6 +37,16 @@ class SilexUserPack implements JetPackInterface
         $dns = $this->_ns() . '.';
         $self = $this;
         
+        // Add the ResolveTargetEntityListener
+        $app->extend('db.event_manager', function ($evs) use ($app, $dns) {
+            $app[$dns . 'init_options']();
+            $rtel = new \Doctrine\ORM\Tools\ResolveTargetEntityListener;
+            // Adds a target-entity class
+            $rtel->addResolveTargetEntity('Quazardous\Silex\UserPack\Entity\UserInterface', $app[$dns . 'user_entity_class'], []);
+            $evs->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $rtel);
+            return $evs;
+        });
+        
         // allow injection of variables into twig templates
         $app[$dns . 'twig_vars_injector'] = $app->protect(function ($controller, $request, $vars) use ($app, $self, $dns) {
             
