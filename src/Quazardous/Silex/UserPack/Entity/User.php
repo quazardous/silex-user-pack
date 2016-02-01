@@ -7,6 +7,8 @@ use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use Quazardous\Silex\UserPack\Entity\UserInterface;
+
 
 /**
  * @Entity
@@ -18,7 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     }
  * )
  */
-class User extends AbstractUserBase
+class User extends AbstractUserBase implements UserInterface
 {
     
 //     public static function loadValidatorMetadata(ClassMetadata $metadata)

@@ -19,12 +19,12 @@ use Quazardous\Silex\UserPack\Entity\AbstractTokenBase;
 class Token extends AbstractTokenBase
 {
     /**
-     * @ManyToOne(targetEntity="Quazardous\Silex\UserPack\Entity\User")
+     * @ManyToOne(targetEntity="Quazardous\Silex\UserPack\Entity\UserInterface")
      * @JoinColumn(name="user_id", referencedColumnName="id", onDelete="CASCADE")
      */
     protected $user;
     
-    public function __construct(\Quazardous\Silex\UserPack\Entity\User $user)
+    public function __construct(\Quazardous\Silex\UserPack\Entity\UserInterface $user)
     {
         $this->setUser($user);
     }
@@ -138,11 +138,11 @@ class Token extends AbstractTokenBase
     /**
      * Set user
      *
-     * @param \Quazardous\Silex\UserPack\Entity\User $user
+     * @param \Quazardous\Silex\UserPack\Entity\UserInterface $user
      *
      * @return Token
      */
-    public function setUser(\Quazardous\Silex\UserPack\Entity\User $user = null)
+    public function setUser(\Quazardous\Silex\UserPack\Entity\UserInterface $user = null)
     {
         $this->user = $user;
 
@@ -152,7 +152,7 @@ class Token extends AbstractTokenBase
     /**
      * Get user
      *
-     * @return \Quazardous\Silex\UserPack\Entity\User
+     * @return \Quazardous\Silex\UserPack\Entity\UserInterface
      */
     public function getUser()
     {

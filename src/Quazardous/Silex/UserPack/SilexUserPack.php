@@ -127,7 +127,7 @@ class SilexUserPack implements JetPackInterface
             if (isset($app['logger'])) {
                 $app['logger']->info("Loading $username...");
             }
-            /** @var \Quazardous\Silex\UserPack\Entity\User $dbUser */
+            /** @var \Quazardous\Silex\UserPack\Entity\UserInterface $dbUser */
             $dbUser = $app['orm.em']->getRepository($app[$dns . 'user_entity_class'])->findOneBy(['username' => $username]);
             if (empty($dbUser)) {
                 if (isset($app['logger'])) {
@@ -271,7 +271,7 @@ class SilexUserPack implements JetPackInterface
         $app[$dns . 'password_recoverer'] = $app->protect(function ($request, $email) use ($app, $dns) {
             $app[$dns . 'init_options']();
             $name = $request->get('_firewall');
-            /** @var \Quazardous\Silex\UserPack\Entity\User $dbUser */
+            /** @var \Quazardous\Silex\UserPack\Entity\UserInterface $dbUser */
             $dbUser = $app['orm.em']->getRepository($app[$dns . 'user_entity_class'])->findOneBy(['email' => $email]);
             if ($dbUser) {
                 $dbToken = $app[$dns . 'secure_token_factory']($dbUser, 'recover_password');
@@ -331,7 +331,7 @@ class SilexUserPack implements JetPackInterface
                 'message' => $dns . 'register.validators.user.unique_entity.username',
             ]));
             $c = $app[$dns . 'user_entity_class'];
-            /** @var \Quazardous\Silex\UserPack\Entity\User $dbUser */
+            /** @var \Quazardous\Silex\UserPack\Entity\UserInterface $dbUser */
             $dbUser = new $c;
             $dbUser->setEmail($data['email']);
             $dbUser->setUsername($app[$dns . 'firewalls'][$name]['use_email_as_username'] ? $data['email'] : $data['username']);
