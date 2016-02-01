@@ -705,7 +705,7 @@ class SilexUserPack implements JetPackInterface
         ];
     }
     
-    public function getTargetEntitesMapping(Container $app)
+    public function getTargetEntitiesMapping(Container $app)
     {
         $dns = $this->_ns() . '.';
         $app[$dns . 'init_options']();
