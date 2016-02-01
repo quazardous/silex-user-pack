@@ -697,11 +697,18 @@ class SilexUserPack implements JetPackInterface
         return $controllers;
     }
 
-    public function getConsoleCommands()
+    public function getConsoleCommands(Container $app)
     {
         return [
             new FixtureCommand(),
             new PasswordCommand()
         ];
+    }
+    
+    public function getTargetEntitesMapping(Container $app)
+    {
+        $dns = $this->_ns() . '.';
+        $app[$dns . 'init_options']();
+        return array_merge((array)$this->packOptions['target_entities_mapping'], ['Quazardous\Silex\UserPack\Entity\UserInterface' => $app[$dns . 'user_entity_class']]);
     }
 }
