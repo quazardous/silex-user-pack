@@ -172,7 +172,7 @@ class User extends AbstractUserBase implements UserInterface
      */
     public function setEmailVerified($emailVerified)
     {
-        $this->emailVerified = $emailVerified;
+        $this->email_verified = $emailVerified;
 
         return $this;
     }
@@ -184,6 +184,6 @@ class User extends AbstractUserBase implements UserInterface
      */
     public function getEmailVerified()
     {
-        return $this->emailVerified;
+        return $this->email_verified;
     }
 }

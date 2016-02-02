@@ -40,6 +40,6 @@ abstract class AbstractUserBase
     /**
      * @Column(type="boolean", nullable=true, options={"default" = 0})
      */
-    protected $emailVerified = false;
+    protected $email_verified = false;
     
 }
