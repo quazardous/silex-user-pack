@@ -39,5 +39,10 @@
             "Quazardous\\Silex\\" : "src/",
             "Quazardous\\Form\\" : "src/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
     }
 }
