@@ -713,6 +713,7 @@ class SilexUserPack implements JetPackInterface
     public function getEntityMappings(Container $app)
     {
         $dns = $this->_ns() . '.';
+        $app[$dns . 'init_options']();
         if ($app[$dns . 'expose_entities']) {
             return $this->_getEntityMappings($app);
         }
