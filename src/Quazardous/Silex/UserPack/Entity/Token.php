@@ -4,6 +4,8 @@ namespace Quazardous\Silex\UserPack\Entity;
 
 use Quazardous\Silex\UserPack\Entity\AbstractTokenBase;
 
+use Quazardous\Silex\UserPack\Entity\TokenInterface;
+
 /**
  * @Entity
  * @Table(
@@ -16,7 +18,7 @@ use Quazardous\Silex\UserPack\Entity\AbstractTokenBase;
  *     }
  * )
  */
-class Token extends AbstractTokenBase
+class Token extends AbstractTokenBase implements TokenInterface
 {
     /**
      * @ManyToOne(targetEntity="Quazardous\Silex\UserPack\Entity\UserInterface")

@@ -81,6 +81,7 @@ class SilexUserPack implements JetPackInterface
             $dns . 'firewalls' => [], // firewalls to manage
             $dns . 'user_entity_class' => 'Quazardous\Silex\UserPack\Entity\User',
             $dns . 'token_entity_class' => 'Quazardous\Silex\UserPack\Entity\Token',
+            $dns . 'token_entity_token_field' => 'token',
             $dns . 'unsecure_mount_prefix' => '/',
             // default register_path, this will be mounted on the 'unsecured_mount_prefix'
             $dns . 'register_path' => '/register',
@@ -89,6 +90,7 @@ class SilexUserPack implements JetPackInterface
             $dns . 'render_password_value' => true,
             $dns . 'email_verification' => true,
             $dns . 'email_verification_expiration' => 'PT24H',
+            $dns . 'require_email_verification_expiration' => 'PT24H',
             $dns . 'recover_password_expiration' => 'PT1H',
             // user will not be enabled until email verification
             $dns . 'require_email_verification' => true,
@@ -155,12 +157,12 @@ class SilexUserPack implements JetPackInterface
             }
             $app[$dns . 'init_options']();
 
-            $dbToken = $app['orm.em']->getRepository($app[$dns . 'token_entity_class'])->findOneBy(['token' => $token]);
+            $dbToken = $app['orm.em']->getRepository($app[$dns . 'token_entity_class'])->findOneBy([$app[$dns . 'token_entity_token_field'] => $token]);
             if (!$dbToken) {
                 throw new NotFoundHttpException("Token not found");
             }
             
-            return $app['orm.em']->getRepository($app[$dns . 'token_entity_class'])->findOneBy(['token' => $token]);
+            return $app['orm.em']->getRepository($app[$dns . 'token_entity_class'])->findOneBy([$app[$dns . 'token_entity_token_field'] => $token]);
         });
         
         $app[$dns . 'token_consumer'] = $app->protect(function ($actuator, $token, $data = []) use ($app, $dns) {
@@ -174,7 +176,7 @@ class SilexUserPack implements JetPackInterface
                 'require_email_verification' => ['register_confirm'],
                 'recover_password' => ['recover_password_confirm'],
             ];
-            /** @var \Quazardous\Silex\UserPack\Entity\Token $token */
+            /** @var \Quazardous\Silex\UserPack\Entity\TokenInterface $token */
 
             if (empty($actuators[$token->getType()]) || !in_array($actuator, $actuators[$token->getType()])) {
                 throw new TokenException("Token too old", TokenException::BAD_USE);
@@ -394,9 +396,9 @@ class SilexUserPack implements JetPackInterface
         
         $app[$dns . 'secure_token_factory'] = $app->protect(function ($user, $type) use ($app, $dns) {
             $metadata = $app['validator.mapping.class_metadata_factory']->getMetadataFor($app[$dns . 'token_entity_class']);
-            $metadata->addConstraint(new UniqueEntity('token'));
+            $metadata->addConstraint(new UniqueEntity($app[$dns . 'token_entity_token_field']));
             $c = $app[$dns . 'token_entity_class'];
-            /** @var \Quazardous\Silex\UserPack\Entity\Token $dbToken */
+            /** @var \Quazardous\Silex\UserPack\Entity\TokenInterface $dbToken */
             $dbToken = new $c($user);
             $dbToken->setType($type);
             $date = new \DateTime();

@@ -13,7 +13,7 @@ abstract class AbstractTokenBase
     protected $id;
     
     /**
-     * @Column(type="string", length=16, nullable=true)
+     * @Column(type="string", length=32, nullable=true)
      */
     protected $type;
     

@@ -169,7 +169,7 @@ class FrontController
         $dns = $this->options['dns'];
         $firewall = $request->get('_firewall');
     
-        /** @var \Quazardous\Silex\UserPack\Entity\Token $token */
+        /** @var \Quazardous\Silex\UserPack\Entity\TokenInterface $token */
         
         $vars = [
             'title' => $app['translator']->trans($dns . 'register_confirm.title'),
