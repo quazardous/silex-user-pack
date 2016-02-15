@@ -24,7 +24,9 @@ use Quazardous\Silex\UserPack\Exception\TokenException;
 
 class SilexUserPack implements JetPackInterface
 {
-    use JetPackTrait;
+    use JetPackTrait {
+        getEntityMappings as _getEntityMappings;
+    }
 
     public function getName() {
         // A short name
@@ -82,6 +84,7 @@ class SilexUserPack implements JetPackInterface
             $dns . 'user_entity_class' => 'Quazardous\Silex\UserPack\Entity\User',
             $dns . 'token_entity_class' => 'Quazardous\Silex\UserPack\Entity\Token',
             $dns . 'token_entity_token_field' => 'token',
+            $dns . 'expose_entities' => true,
             $dns . 'unsecure_mount_prefix' => '/',
             // default register_path, this will be mounted on the 'unsecured_mount_prefix'
             $dns . 'register_path' => '/register',
@@ -705,6 +708,15 @@ class SilexUserPack implements JetPackInterface
             new FixtureCommand(),
             new PasswordCommand()
         ];
+    }
+    
+    public function getEntityMappings(Container $app)
+    {
+        $dns = $this->_ns() . '.';
+        if ($app[$dns . 'expose_entities']) {
+            return $this->_getEntityMappings($app);
+        }
+        return [];
     }
     
     public function getTargetEntitiesMapping(Container $app)
