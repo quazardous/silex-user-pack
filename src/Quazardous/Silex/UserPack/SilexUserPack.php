@@ -213,8 +213,9 @@ class SilexUserPack implements JetPackInterface
                         // submit
                         $token->setConsumed(true);
                         $token->setConsumedAt(new \DateTime());
-                        $app['orm.em']->flush();
                     }
+                    $token->getUser()->setEmailVerified(true);
+                    $app['orm.em']->flush();
                     return true;
             }
             
