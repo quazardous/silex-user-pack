@@ -609,6 +609,7 @@ class SilexUserPack implements JetPackInterface
         
         // add the login routes and controllers
         $added_routes = [];
+        $all_routes = [];
         foreach ($app[$dns . 'injected_paths'] as $name => $paths) {
             $c = [];
             $r = [];
@@ -690,7 +691,13 @@ class SilexUserPack implements JetPackInterface
                 }
                 $cv->value("_firewall", $name);
             }
+            
+            foreach ($r as $rk => $rv) {
+                $all_routes[$name]["{$rk}_route"] = $rv;
+            }
+            
         }
+        $app[$dns . 'routes'] = $all_routes;
         
         if ($app['debug']) {
             $email = $controllers->get('/_user/debug/email/{email}.{ext}', $this->_ns('controller.debug:displayEmailAction'));
