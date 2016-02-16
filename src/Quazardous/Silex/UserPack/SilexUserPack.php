@@ -82,6 +82,7 @@ class SilexUserPack implements JetPackInterface
         $app[$dns . 'default.options'] = [
             $dns . 'firewalls' => [], // firewalls to manage
             $dns . 'user_entity_class' => 'Quazardous\Silex\UserPack\Entity\User',
+            $dns . 'user_entity_email_field' => 'email',
             $dns . 'token_entity_class' => 'Quazardous\Silex\UserPack\Entity\Token',
             $dns . 'token_entity_token_field' => 'token',
             $dns . 'expose_entities' => true,
@@ -288,7 +289,7 @@ class SilexUserPack implements JetPackInterface
             $app[$dns . 'init_options']();
             $name = $request->get('_firewall');
             /** @var \Quazardous\Silex\UserPack\Entity\UserInterface $dbUser */
-            $dbUser = $app['orm.em']->getRepository($app[$dns . 'user_entity_class'])->findOneBy(['email' => $email]);
+            $dbUser = $app['orm.em']->getRepository($app[$dns . 'user_entity_class'])->findOneBy([$app[$dns . 'user_entity_email_field'] => $email]);
             if ($dbUser) {
                 $dbToken = $app[$dns . 'secure_token_factory']($dbUser, 'recover_password');
                 $app['orm.em']->flush();

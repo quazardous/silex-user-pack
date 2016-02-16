@@ -22,17 +22,6 @@ use Quazardous\Silex\UserPack\Entity\UserInterface;
  */
 class User extends AbstractUserBase implements UserInterface
 {
-    
-//     public static function loadValidatorMetadata(ClassMetadata $metadata)
-//     {
-//         $metadata->addConstraint(new UniqueEntity([
-//             'fields'  => 'email',
-//             'message' => ''
-//         ]));
-    
-//         $metadata->addPropertyConstraint('email', new Assert\Email());
-//     }
-    
     /**
      * Get id
      *
