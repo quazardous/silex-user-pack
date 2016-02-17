@@ -399,7 +399,7 @@ class SilexUserPack implements JetPackInterface
         });
         
         
-        $app[$dns . 'secure_token_factory'] = $app->protect(function ($user, $type) use ($app, $dns) {
+        $app[$dns . 'secure_token_factory'] = $app->protect(function ($user, $type, $expiration = null) use ($app, $dns) {
             $metadata = $app['validator.mapping.class_metadata_factory']->getMetadataFor($app[$dns . 'token_entity_class']);
             $metadata->addConstraint(new UniqueEntity($app[$dns . 'token_entity_token_field']));
             $c = $app[$dns . 'token_entity_class'];
@@ -407,7 +407,15 @@ class SilexUserPack implements JetPackInterface
             $dbToken = new $c($user);
             $dbToken->setType($type);
             $date = new \DateTime();
-            $date->add(new \DateInterval($app[$dns . $type .'_expiration']));
+            if (empty($expiration)) {
+                if (isset($app[$dns . $type .'_expiration'])) {
+                    $expiration = $app[$dns . $type .'_expiration'];
+                }
+            }
+            if (empty($expiration)) {
+                $expiration = 'PT24H';
+            }
+            $date->add(new \DateInterval($expiration));
             $dbToken->setExpiredAt($date);
             
             for(;;)
