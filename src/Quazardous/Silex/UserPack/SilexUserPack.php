@@ -606,117 +606,121 @@ class SilexUserPack implements JetPackInterface
             $app[$dns . 'all_paths'] = $all_paths;
             return $firewalls;
         };
+        
+        $app[$dns . 'controllers'] = function ($app) use ($dns) {
+            $app['security.firewalls'];
+            $builder = $app[$dns . 'route_name_builder'];
+            
+            /** @var ControllerCollection $controllers */
+            $controllers = $app['controllers_factory'];
+            
+            // add the login routes and controllers
+            $added_routes = [];
+            $all_routes = [];
+            foreach ($app[$dns . 'injected_paths'] as $name => $paths) {
+                $c = [];
+                $r = [];
+                if (isset($paths['login_path'])) {
+                    if (empty($app[$dns . 'all_paths'][$name]['check_path'])) {
+                        throw new \LogicException("No check_path for login_path " . $paths['login_path']);
+                    }
+            
+                    $r['login'] = $builder($paths['login_path']);
+                    if (empty($added_routes[$r['login']])) {
+                        // add a route only once
+                        $checkLoginRoute = $builder($app[$dns . 'all_paths'][$name]['check_path'], false);
+                        $c['login'] = $controllers->get($paths['login_path'], $this->_ns('controller.front:loginAction'))
+                        ->value('_check_route', $checkLoginRoute)
+                        ->bind($r['login']);
+                        $added_routes[$r['login']] = true;
+                    }
+                }
+                if (!$r['login'] && !empty($app['security.firewalls'][$name]['form']['login_path'])) {
+                    $r['login'] = $builder($app['security.firewalls'][$name]['form']['login_path'], false);
+                }
+            
+                if (isset($paths['register_confirm_path'])) {
+                    $r['register_confirm'] = $builder($paths['register_confirm_path']);
+                    if (empty($added_routes[$r['register_confirm']])) {
+                        // add a route only once
+                        $c['register_confirm'] = $controllers->get($paths['register_confirm_path'], $this->_ns('controller.front:registerConfirmAction'))
+                        ->convert('token', $app[$dns . 'token_converter'])
+                        ->bind($r['register_confirm']);
+                        $added_routes[$r['register_confirm']] = true;
+                    }
+                }
+                if (isset($paths['register_path'])) {
+                    if (empty($paths['register_complete_path'])) {
+                        throw new \LogicException("No register_complete_path for register_path " . $paths['register_path']);
+                    }
+                    $registerCompleteRoute = $builder($paths['register_complete_path']);
+                    if (empty($added_routes[$registerCompleteRoute])) {
+                        // add a route only once
+                        $c['register_complete'] = $controllers->get($paths['register_complete_path'], $this->_ns('controller.front:registerCompleteAction'))
+                        ->bind($registerCompleteRoute);
+                        $added_routes[$registerCompleteRoute] = true;
+                    }
+            
+                    $r['register'] = $builder($paths['register_path']);
+                    if (empty($added_routes[$r['register']])) {
+                        // add a route only once
+                        $c['register'] = $controllers->match($paths['register_path'], $this->_ns('controller.front:registerAction'))
+                        ->bind($r['register'])
+                        ->value('_register_complete_route', $registerCompleteRoute);
+            
+                        $added_routes[$r['register']] = true;
+                    }
+                }
+                if (isset($paths['recover_password_path'])) {
+                    $r['recover_password'] = $builder($paths['recover_password_path']);
+                    if (empty($added_routes[$r['recover_password']])) {
+                        // add a route only once
+                        $c['recover_password'] = $controllers->match($paths['recover_password_path'], $this->_ns('controller.front:recoverPasswordAction'))
+                        ->bind($r['recover_password']);
+                        $added_routes[$r['recover_password']] = true;
+                    }
+                }
+                if (isset($paths['recover_password_confirm_path'])) {
+                    $r['recover_password_confirm'] = $builder($paths['recover_password_confirm_path']);
+                    if (empty($added_routes[$r['recover_password_confirm']])) {
+                        // add a route only once
+                        $c['recover_password_confirm'] = $controllers->match($paths['recover_password_confirm_path'], $this->_ns('controller.front:recoverPasswordConfirmAction'))
+                        ->convert('token', $app[$dns . 'token_converter'])
+                        ->bind($r['recover_password_confirm']);
+                        $added_routes[$r['recover_password_confirm']] = true;
+                    }
+                }
+            
+                // inject public routes in all controllers
+                foreach ($c as $cv) {
+                    foreach ($r as $rk => $rv) {
+                        $cv->value("_{$rk}_route", $rv);
+                    }
+                    $cv->value("_firewall", $name);
+                }
+            
+                foreach ($r as $rk => $rv) {
+                    $all_routes[$name]["{$rk}_route"] = $rv;
+                }
+            
+            }
+            $app[$dns . 'routes'] = $all_routes;
+            
+            if ($app['debug']) {
+                $email = $controllers->get('/_user/debug/email/{email}.{ext}', $this->_ns('controller.debug:displayEmailAction'));
+                foreach ($r as $rk => $rv) {
+                    $email->value("_{$rk}_route", $rv);
+                }
+            }
+            
+            return $controllers;
+        };
     }
 
     public function connect(Application $app)
     {
-        $app['security.firewalls'];
         $dns = $this->_ns() . '.';
-        $builder = $app[$dns . 'route_name_builder'];
-        
-        /** @var ControllerCollection $controllers */
-        $controllers = $app['controllers_factory'];
-        
-        // add the login routes and controllers
-        $added_routes = [];
-        $all_routes = [];
-        foreach ($app[$dns . 'injected_paths'] as $name => $paths) {
-            $c = [];
-            $r = [];
-            if (isset($paths['login_path'])) {
-                if (empty($app[$dns . 'all_paths'][$name]['check_path'])) {
-                    throw new \LogicException("No check_path for login_path " . $paths['login_path']);
-                }
-                
-                $r['login'] = $builder($paths['login_path']);
-                if (empty($added_routes[$r['login']])) {
-                    // add a route only once
-                    $checkLoginRoute = $builder($app[$dns . 'all_paths'][$name]['check_path'], false);
-                    $c['login'] = $controllers->get($paths['login_path'], $this->_ns('controller.front:loginAction'))
-                        ->value('_check_route', $checkLoginRoute)
-                        ->bind($r['login']);
-                    $added_routes[$r['login']] = true;
-                }
-            }
-            if (!$r['login'] && !empty($app['security.firewalls'][$name]['form']['login_path'])) {
-                $r['login'] = $builder($app['security.firewalls'][$name]['form']['login_path'], false);
-            }
-
-            if (isset($paths['register_confirm_path'])) {
-                $r['register_confirm'] = $builder($paths['register_confirm_path']);
-                if (empty($added_routes[$r['register_confirm']])) {
-                    // add a route only once
-                    $c['register_confirm'] = $controllers->get($paths['register_confirm_path'], $this->_ns('controller.front:registerConfirmAction'))
-                        ->convert('token', $app[$dns . 'token_converter'])
-                        ->bind($r['register_confirm']);
-                    $added_routes[$r['register_confirm']] = true;
-                }
-            }
-            if (isset($paths['register_path'])) {
-                if (empty($paths['register_complete_path'])) {
-                    throw new \LogicException("No register_complete_path for register_path " . $paths['register_path']);
-                }
-                $registerCompleteRoute = $builder($paths['register_complete_path']);
-                if (empty($added_routes[$registerCompleteRoute])) {
-                    // add a route only once
-                    $c['register_complete'] = $controllers->get($paths['register_complete_path'], $this->_ns('controller.front:registerCompleteAction'))
-                        ->bind($registerCompleteRoute);
-                    $added_routes[$registerCompleteRoute] = true;
-                }
-
-                $r['register'] = $builder($paths['register_path']);
-                if (empty($added_routes[$r['register']])) {
-                    // add a route only once
-                    $c['register'] = $controllers->match($paths['register_path'], $this->_ns('controller.front:registerAction'))
-                        ->bind($r['register'])
-                        ->value('_register_complete_route', $registerCompleteRoute);
-                    
-                    $added_routes[$r['register']] = true;
-                }
-            }
-            if (isset($paths['recover_password_path'])) {
-                $r['recover_password'] = $builder($paths['recover_password_path']);
-                if (empty($added_routes[$r['recover_password']])) {
-                    // add a route only once
-                    $c['recover_password'] = $controllers->match($paths['recover_password_path'], $this->_ns('controller.front:recoverPasswordAction'))
-                        ->bind($r['recover_password']);
-                    $added_routes[$r['recover_password']] = true;
-                }
-            }
-            if (isset($paths['recover_password_confirm_path'])) {
-                $r['recover_password_confirm'] = $builder($paths['recover_password_confirm_path']);
-                if (empty($added_routes[$r['recover_password_confirm']])) {
-                    // add a route only once
-                    $c['recover_password_confirm'] = $controllers->match($paths['recover_password_confirm_path'], $this->_ns('controller.front:recoverPasswordConfirmAction'))
-                        ->convert('token', $app[$dns . 'token_converter'])
-                        ->bind($r['recover_password_confirm']);
-                    $added_routes[$r['recover_password_confirm']] = true;
-                }
-            }
-            
-            // inject public routes in all controllers
-            foreach ($c as $cv) {
-                foreach ($r as $rk => $rv) {
-                    $cv->value("_{$rk}_route", $rv);
-                }
-                $cv->value("_firewall", $name);
-            }
-            
-            foreach ($r as $rk => $rv) {
-                $all_routes[$name]["{$rk}_route"] = $rv;
-            }
-            
-        }
-        $app[$dns . 'routes'] = $all_routes;
-        
-        if ($app['debug']) {
-            $email = $controllers->get('/_user/debug/email/{email}.{ext}', $this->_ns('controller.debug:displayEmailAction'));
-            foreach ($r as $rk => $rv) {
-                $email->value("_{$rk}_route", $rv);
-            }
-        }
-        
-        return $controllers;
+        return $app[$dns . 'controllers'];
     }
 
     public function getConsoleCommands(Container $app)
