@@ -183,7 +183,7 @@ class SilexUserPack implements JetPackInterface
             /** @var \Quazardous\Silex\UserPack\Entity\TokenInterface $token */
 
             if (empty($actuators[$token->getType()]) || !in_array($actuator, $actuators[$token->getType()])) {
-                throw new TokenException("Token too old", TokenException::BAD_USE);
+                throw new TokenException("Token bad use", TokenException::BAD_USE);
             }
             
             $now = new \DateTime();
