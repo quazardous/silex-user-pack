@@ -59,7 +59,7 @@ class SilexUserPack implements JetPackInterface
         });
         
         $app[$dns . 'password_encoder'] = $app->protect(function ($password, $salt = '') use ($app) {
-            $encoder = $app['security.encoder.digest'];
+            $encoder = $app['security.default_encoder'];
             return $encoder->encodePassword($password, $salt);
         });
         
