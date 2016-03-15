@@ -20,9 +20,7 @@ class PasswordCommand extends Command
         $app = $this->getApplication()->getContainer();
         $password = $input->getArgument('password');
 
-        $encoder = $app['user.password_encoder'];
-
-        $password = $encoder->encodePassword($password, '');
+        $password = $app['user.password_encoder']($password);
 
         $output->writeln($password);
     }
