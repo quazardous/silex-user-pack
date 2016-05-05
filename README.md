@@ -24,7 +24,6 @@ You have to extends a `Quazardous\Silex\PackableApplication` and use:
 - `Silex\Application\TwigTrait`
 - `Silex\Application\UrlGeneratorTrait`
 - `Silex\Application\FormTrait`
-- `Quazardous\Silex\Application\NamedFormTrait`
 
 
 ```php
@@ -33,7 +32,6 @@ namespace Acme {
         use \Silex\Application\TwigTrait;
         use \Silex\Application\UrlGeneratorTrait;
         use \Silex\Application\FormTrait;
-        use \Quazardous\Silex\Application\NamedFormTrait;
     };
 }
 
