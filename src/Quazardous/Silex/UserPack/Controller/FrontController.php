@@ -351,4 +351,101 @@ class FrontController
         $vars = call_user_func($app[$dns . 'twig_vars_injector'], 'front:' . __METHOD__, $request, $vars);
         return $app->renderView($this->options['ns'] . "/front/recover_password_confirm.html.twig", $vars);
     }
+    
+    public function changePasswordAction(Application $app, Request $request)
+    {
+        $dns = $this->options['dns'];
+        $firewall = $request->get('_firewall');
+
+        $changePasswordException = $request->getSession()->get($dns . 'change_password_exception', []);
+        $changePasswordException += [
+            'field_errors' => [],
+            'message' => null,
+        ];
+        
+        $vars = [
+            'title' => 'User Pack Change Password',
+            'error' => $changePasswordException['message'],
+        ];
+        
+        $userChangePasswordForm = $app->namedForm('user_change_password')
+            ->add('old_password', PasswordType::class, ['label' => $dns . 'change_password.labels.old_password'])
+            ->add('password', PasswordType::class, ['label' => $dns . 'change_password.labels.password'])
+            ->add('confirm_password', PasswordType::class, ['label' => $dns . 'change_password.labels.confirm_password'])
+            ->add('submit', SubmitType::class, ['label' => $dns . 'change_password.labels.submit'])
+            ->getForm();
+        
+        $userChangePasswordForm->handleRequest($request);
+
+        if ($userChangePasswordForm->isSubmitted()) {
+            if ($userChangePasswordForm->isValid()) {
+                $data = $userChangePasswordForm->getData();
+                /** @var \Symfony\Component\Security\Core\User\User $user */
+                $user = $app['user'];
+                $dbUser = $app[$dns . 'user_loader']($user->getUsername(), false);
+
+                if (!$app[$dns . 'password_validator']($dbUser->getPassword(), $data['old_password'])) {
+                    $request->getSession()->getFlashBag()->add('message', $app['translator']->trans($dns . 'change_password.messages.bad_old_password'));
+                    $request->getSession()->remove($dns . 'change_password_exception');
+                    return $app->redirect($request->getUri());
+                }
+                unset($data['old_password']);
+                
+                $constraints = [];
+                $constraints['password'] = new Constraints\Length([
+                    'min' => 8,
+                    'minMessage' => $dns . 'change_password.validators.password.length.min',
+                    'max' => 16,
+                    'maxMessage' => $dns . 'change_password.validators.password.length.max',
+                ]);
+                $constraints['confirm_password'] = new Constraints\EqualTo([
+                    'value' => $data['password'],
+                    'message' => $dns . 'change_password.validators.confirm_password.equal_to.password',
+                ]);
+                $constraints = new Constraints\Collection($constraints);
+                $violations = $app['validator']->validate($data, $constraints);
+                if (count($violations)) {
+                    $fieldErrors = [];
+                    foreach ($violations as $violation) {
+                        /** @var \Symfony\Component\Validator\ConstraintViolation $violation */
+                        $field = $violation->getPropertyPath();
+                        $field = trim($field, '[]');
+                        if (!isset($fieldErrors[$field])){
+                            $fieldErrors[$field] = [];
+                        }
+                        $fieldErrors[$field][] = $violation->getMessage();
+                    }
+                    $request->getSession()->set($dns . 'change_password_exception', [
+                        'message' => $app['translator']->trans($dns . 'change_password.errors.validation', [], 'errors'),
+                        'field_errors' => $fieldErrors,
+                    ]);
+                } else {
+                    $dbUser->setPassword($app[$dns . 'password_encoder']($data['password']));
+                    $app['orm.em']->flush();
+                    $request->getSession()->getFlashBag()->add('message', $app['translator']->trans($dns . 'change_password.messages.password_changed'));
+                    $request->getSession()->remove($dns . 'change_password_exception');
+                }
+            }
+        }
+        
+        if ($request->isMethod('POST')) {
+            return $app->redirect($request->getUri());
+        }
+        
+        foreach ($changePasswordException['field_errors'] as $field => $errors) {
+            if ($userChangePasswordForm->has($field)) {
+                foreach ($errors as $error) {
+                    $userChangePasswordForm->get($field)->addError(new FormError($error));
+                }
+            }
+        }
+            
+        $vars['user_change_password_form'] = $userChangePasswordForm->createView();
+        
+        foreach($this->publicRoutes as $route) {
+            $vars[$route] = $request->get($route);
+        }
+        $vars = call_user_func($app[$dns . 'twig_vars_injector'], 'front:' . __METHOD__, $request, $vars);
+        return $app->renderView($this->options['ns'] . "/front/change_password.html.twig", $vars);
+    }
 }

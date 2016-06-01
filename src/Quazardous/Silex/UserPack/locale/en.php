@@ -116,5 +116,20 @@ return [
                 'password_changed' => 'Your password has been changed.',
             ],
         ],
+        'change_password' => [
+            'title' => 'Silex User Pack Change Password',
+            'labels' => [
+                'old_password' => 'Old Password',
+                'password' => 'Password',
+                'confirm_password' => 'Confirm password',
+                'submit' => 'Change password !',
+                'register' => 'Register',
+                'login' => 'Login',
+            ],
+            'messages' => [
+                'password_changed' => 'Your password has been changed.',
+                'bad_old_password' => 'Sorry your old password is wrong.',
+            ],
+        ],
     ]
 ];

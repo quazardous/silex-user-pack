@@ -48,5 +48,20 @@ return [
                  ],
             ],
         ],
+        'change_password' => [
+            'validators' => [
+                'password' => [
+                    'length' => [
+                        'max' => 'The password is too long. It should have {{ limit }} character or less.|The password is too long. It should have {{ limit }} characters or less.',
+                        'min' => 'The password is too short. It should have {{ limit }} character or more.|The password is too short. It should have {{ limit }} characters or more.',
+                    ],
+                 ],
+                'confirm_password' => [
+                    'equal_to' => [
+                        'password' => 'The passwords are different.'
+                     ],
+                 ],
+            ],
+        ],
     ]
 ];

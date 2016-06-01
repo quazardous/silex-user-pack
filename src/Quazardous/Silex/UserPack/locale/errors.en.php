@@ -13,6 +13,11 @@ return [
                 'validation' => 'Some fields have errors.',
             ],
         ],
+        'change_password' => [
+            'errors' => [
+                'validation' => 'Some fields have errors.',
+            ],
+        ],
         'register' => [
             'errors' => [
                 'validation' => 'Some fields have errors.',

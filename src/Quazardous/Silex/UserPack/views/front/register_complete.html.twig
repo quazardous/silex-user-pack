@@ -4,17 +4,17 @@
 
 <p>
 {% if _require_email_verification %}
-{{ (duns ~ 'register_complete.texts.require_email_verification')|trans|e }}
+{{ (duns ~ 'register_complete.texts.require_email_verification')|trans }}
 {% elseif _email_verification %}
-{{ (duns ~ 'register_complete.texts.email_verification')|trans|e }}
+{{ (duns ~ 'register_complete.texts.email_verification')|trans }}
 {% else %}
-{{ (duns ~ 'register_complete.texts.no_email_verification')|trans|e }}
+{{ (duns ~ 'register_complete.texts.no_email_verification')|trans }}
 {% endif %}
 </p>
 
 {% if _login_route %}
 <p>
-<a href="{{ path(_login_route) }}">{{ (duns ~ 'register_complete.labels.login')|trans|e }}</a>
+<a href="{{ path(_login_route) }}">{{ (duns ~ 'register_complete.labels.login')|trans }}</a>
 </p>
 {% endif %}
 

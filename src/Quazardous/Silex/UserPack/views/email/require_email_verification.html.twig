@@ -3,26 +3,26 @@
 <head>
 <meta name="viewport" content="width=device-width">
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>{{ subject|e }}</title>
+<title>{{ subject }}</title>
 </head>
 <body>
 
 <p>
-{{ (duns ~ 'require_email_verification.texts.welcome')|trans|e }}
+{{ (duns ~ 'require_email_verification.texts.welcome')|trans }}
 </p>
 
 <p>
-{{ (duns ~ 'require_email_verification.texts.confirm_email')|trans|e }}<br/>
-<a href="{{ url(register_confirm_route, {token: token})|e }}">{{ (duns ~ 'require_email_verification.labels.confirm_link')|trans|e }}</a>
+{{ (duns ~ 'require_email_verification.texts.confirm_email')|trans }}<br/>
+<a href="{{ url(register_confirm_route, {token: token}) }}">{{ (duns ~ 'require_email_verification.labels.confirm_link')|trans }}</a>
 </p>
 
 <p>
-{{ (duns ~ 'require_email_verification.texts.copy_link')|trans|e }}<br/>
-<pre>{{ url(register_confirm_route, {token: token})|e }}</pre>
+{{ (duns ~ 'require_email_verification.texts.copy_link')|trans }}<br/>
+<pre>{{ url(register_confirm_route, {token: token}) }}</pre>
 </p>
 
 <p>
-<a href="{{ url(login_route)|e }}">{{ (duns ~ 'email.labels.login_link')|trans|e }}</a>
+<a href="{{ url(login_route) }}">{{ (duns ~ 'email.labels.login_link')|trans }}</a>
 </p>
 
 </body>

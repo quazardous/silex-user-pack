@@ -6,13 +6,13 @@
 
 {% if _register_route %}
 <p>
-<a href="{{ path(_register_route) }}">{{ (duns ~ 'login.labels.register')|trans|e }}</a>
+<a href="{{ path(_register_route) }}">{{ (duns ~ 'login.labels.register')|trans }}</a>
 </p>
 {% endif %}
 
 {% if _recover_password_route %}
 <p>
-<a href="{{ path(_recover_password_route) }}">{{ (duns ~ 'login.labels.recover_password')|trans|e }}</a>
+<a href="{{ path(_recover_password_route) }}">{{ (duns ~ 'login.labels.recover_password')|trans }}</a>
 </p>
 {% endif %}
 

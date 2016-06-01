@@ -63,6 +63,11 @@ class SilexUserPack implements JetPackInterface
             return $encoder->encodePassword($password, $salt);
         });
         
+        $app[$dns . 'password_validator'] = $app->protect(function ($encoded, $raw, $salt = '') use ($app) {
+            $encoder = $app['security.default_encoder'];
+            return $encoder->isPasswordValid($encoded, $raw, $salt);
+        });
+        
         $app[$dns . 'controller.front'] = function ($app) use ($self, $dns) {
             return new FrontController([
                 'ns' => '@' . $self->getName(),
@@ -86,7 +91,7 @@ class SilexUserPack implements JetPackInterface
             $dns . 'token_entity_class' => 'Quazardous\Silex\UserPack\Entity\Token',
             $dns . 'token_entity_token_field' => 'token',
             $dns . 'expose_entities' => true,
-            $dns . 'unsecure_mount_prefix' => '/',
+            $dns . 'unsecured_mount_prefix' => '/',
             // default register_path, this will be mounted on the 'unsecured_mount_prefix'
             $dns . 'register_path' => '/register',
             $dns . 'use_email_as_username' => false,
@@ -111,6 +116,7 @@ class SilexUserPack implements JetPackInterface
             // default 'check_path' and 'logout_path' this will be mounted on the 'secured_mount_prefix'
             $dns . 'check_path' => '/login_check',
             $dns . 'logout_path' => '/logout',
+            $dns . 'change_password_path' => '/change_password',
             // change the default parameter names to fit with symfony form
             $dns . 'username_parameter' => 'user_login[_username]',
             $dns . 'password_parameter' => 'user_login[_password]',
@@ -502,10 +508,11 @@ class SilexUserPack implements JetPackInterface
                 }
                 
                 $options += [
-                    'unsecure_mount_prefix' => $app[$dns . 'unsecure_mount_prefix'],
+                    'unsecured_mount_prefix' => $app[$dns . 'unsecured_mount_prefix'],
                     'login_path' => $app[$dns . 'login_path'],
                     'check_path' => $app[$dns . 'check_path'],
                     'logout_path' => $app[$dns . 'logout_path'],
+                    'change_password_path' => $app[$dns . 'change_password_path'],
                     'invalidate_session' => $app[$dns . 'invalidate_session'],
                     'username_parameter' => $app[$dns . 'username_parameter'],
                     'password_parameter' => $app[$dns . 'password_parameter'],
@@ -548,7 +555,7 @@ class SilexUserPack implements JetPackInterface
                             $firewalls[$name]['form'] = [];
                         }
                         if (empty($firewalls[$name]['form']['login_path'])) {
-                            $path = '/' . $options['unsecure_mount_prefix'] . '/' . $options['login_path'];
+                            $path = '/' . $options['unsecured_mount_prefix'] . '/' . $options['login_path'];
                             $firewalls[$name]['form']['login_path'] = $sanitizer($path);
                             // keep track of the path we have injected
                             $injected_paths[$name]['login_path'] = $firewalls[$name]['form']['login_path'];
@@ -590,10 +597,18 @@ class SilexUserPack implements JetPackInterface
                             return $app[$dns . 'user_provider'];
                         };
                     }
-                    // handle register stuff
+                    // handle register and recovery password stuff mounted on unsecure path
                     foreach (['register_path', 'register_complete_path', 'register_confirm_path', 'recover_password_path', 'recover_password_confirm_path'] as $p) {
                         if (!empty($options[$p])) {
-                            $path = $sanitizer('/' . $options['unsecure_mount_prefix'] . '/' . $options[$p]);
+                            $path = $sanitizer('/' . $options['unsecured_mount_prefix'] . '/' . $options[$p]);
+                            $injected_paths[$name][$p] = $path;
+                            $all_paths[$name][$p] = $path;
+                        }
+                    }
+                    // handle change password stuff mounted on secure path
+                    foreach (['change_password_path'] as $p) {
+                        if (!empty($options[$p])) {
+                            $path = $sanitizer('/' . $options['secured_mount_prefix'] . '/' . $options[$p]);
                             $injected_paths[$name][$p] = $path;
                             $all_paths[$name][$p] = $path;
                         }
@@ -630,8 +645,8 @@ class SilexUserPack implements JetPackInterface
                         // add a route only once
                         $checkLoginRoute = $builder($app[$dns . 'all_paths'][$name]['check_path'], false);
                         $c['login'] = $controllers->get($paths['login_path'], $this->_ns('controller.front:loginAction'))
-                        ->value('_check_route', $checkLoginRoute)
-                        ->bind($r['login']);
+                            ->value('_check_route', $checkLoginRoute)
+                            ->bind($r['login']);
                         $added_routes[$r['login']] = true;
                     }
                 }
@@ -644,8 +659,8 @@ class SilexUserPack implements JetPackInterface
                     if (empty($added_routes[$r['register_confirm']])) {
                         // add a route only once
                         $c['register_confirm'] = $controllers->get($paths['register_confirm_path'], $this->_ns('controller.front:registerConfirmAction'))
-                        ->convert('token', $app[$dns . 'token_converter'])
-                        ->bind($r['register_confirm']);
+                            ->convert('token', $app[$dns . 'token_converter'])
+                            ->bind($r['register_confirm']);
                         $added_routes[$r['register_confirm']] = true;
                     }
                 }
@@ -657,7 +672,7 @@ class SilexUserPack implements JetPackInterface
                     if (empty($added_routes[$registerCompleteRoute])) {
                         // add a route only once
                         $c['register_complete'] = $controllers->get($paths['register_complete_path'], $this->_ns('controller.front:registerCompleteAction'))
-                        ->bind($registerCompleteRoute);
+                            ->bind($registerCompleteRoute);
                         $added_routes[$registerCompleteRoute] = true;
                     }
             
@@ -665,9 +680,8 @@ class SilexUserPack implements JetPackInterface
                     if (empty($added_routes[$r['register']])) {
                         // add a route only once
                         $c['register'] = $controllers->match($paths['register_path'], $this->_ns('controller.front:registerAction'))
-                        ->bind($r['register'])
-                        ->value('_register_complete_route', $registerCompleteRoute);
-            
+                            ->bind($r['register'])
+                            ->value('_register_complete_route', $registerCompleteRoute);
                         $added_routes[$r['register']] = true;
                     }
                 }
@@ -676,7 +690,7 @@ class SilexUserPack implements JetPackInterface
                     if (empty($added_routes[$r['recover_password']])) {
                         // add a route only once
                         $c['recover_password'] = $controllers->match($paths['recover_password_path'], $this->_ns('controller.front:recoverPasswordAction'))
-                        ->bind($r['recover_password']);
+                            ->bind($r['recover_password']);
                         $added_routes[$r['recover_password']] = true;
                     }
                 }
@@ -685,9 +699,18 @@ class SilexUserPack implements JetPackInterface
                     if (empty($added_routes[$r['recover_password_confirm']])) {
                         // add a route only once
                         $c['recover_password_confirm'] = $controllers->match($paths['recover_password_confirm_path'], $this->_ns('controller.front:recoverPasswordConfirmAction'))
-                        ->convert('token', $app[$dns . 'token_converter'])
-                        ->bind($r['recover_password_confirm']);
+                            ->convert('token', $app[$dns . 'token_converter'])
+                            ->bind($r['recover_password_confirm']);
                         $added_routes[$r['recover_password_confirm']] = true;
+                    }
+                }
+                if (isset($paths['change_password_path'])) {
+                    $r['change_password'] = $builder($paths['change_password_path']);
+                    if (empty($added_routes[$r['change_password']])) {
+                        // add a route only once
+                        $c['change_password'] = $controllers->match($paths['change_password_path'], $this->_ns('controller.front:changePasswordAction'))
+                            ->bind($r['change_password']);
+                        $added_routes[$r['change_password']] = true;
                     }
                 }
             
